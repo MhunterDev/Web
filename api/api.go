@@ -11,9 +11,7 @@ func handelWelcome(c *fiber.Ctx) error {
 // Router handles all routes and listens tls
 func Router() {
 	app := fiber.New()
-
-	app.Static("/static", "./css")
+	app.Static("/static", "./html/css/")
 	app.Get("/", handelWelcome)
-
 	app.Listen(":8080")
 }
