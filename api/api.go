@@ -5,12 +5,15 @@ import (
 )
 
 func handelWelcome(c *fiber.Ctx) error {
-	return c.Render("/workspaces/hunterdev/Web/api/html/welcome.html", fiber.Map{}, "html")
+	return c.Render("/workspaces/Web/api/html/welcome.html", fiber.Map{}, "html")
 }
 
 // Router handles all routes and listens tls
 func Router() {
 	app := fiber.New()
 
-	app.ListenTLS(":8080", "/etc/mhdev/keychain/tls/ca.crt", "/etc/mhdev/keychain/tls/secret/ca.crt")
+	app.Static("/static", "./css")
+	app.Get("/", handelWelcome)
+
+	app.Listen(":8080")
 }

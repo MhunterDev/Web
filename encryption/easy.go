@@ -13,7 +13,6 @@ import (
 	"os"
 	"time"
 
-	easy "github.com/MhunterDev/Web/encryption"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -175,29 +174,27 @@ func GenerateCerts() error {
 
 func BuildFS() error {
 
-	// Build Logging directories
-	os.MkdirAll("/usr/lib/mhdev/logs", 077)
-	os.Create("/usr/lib/mhdev/logs/Install.log")
-	os.Create("/usr/lib/mhdev/logs/Base-processes.log")
-	os.Create("/usr/lib/mhdev/logs/pgrunner.log")
-	time.Sleep(1 * time.Second)
-
+	fmt.Println("Building the file system")
 	//Build the Keychains
-	err := os.MkdirAll("/usr/lib/mhdev/keychain/tls/secret", 077)
+	err := os.MkdirAll("/etc/mhdev/keychain/tls/secret", 077)
 	if err != nil {
 		return err
 	}
 
-	os.Create("/usr/lib/mhdev/keychain/tls/secret/CA.key")
-	os.Create("/usr/lib/mhdev/keychain/tls/CA.crt")
-	os.Create("/usr/lib/mhdev/keychain/secret.pem")
+	fmt.Println("Generating Keychain")
+
+	os.Create("/etc/mhdev/keychain/tls/secret/CA.key")
+	os.Create("/etc/mhdev/keychain/tls/CA.crt")
+	os.Create("/etc/mhdev/keychain/secret.pem")
 	time.Sleep(1 * time.Second)
 
+	fmt.Println("Cleaning Up")
 	//Populate the secrets
-	easy.MakeSecret()
-	easy.GenerateHTTPS()
-	logsalot.LogInit("Secrets")
+	MakeSecret()
+	GenerateCerts()
+
 	time.Sleep(2 * time.Second)
 
+	fmt.Println("Completed")
 	return nil
 }
