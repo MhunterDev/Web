@@ -13,6 +13,7 @@ import (
 	"os"
 	"time"
 
+	db "github.com/MhunterDev/Web/database"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -171,6 +172,39 @@ func GenerateCerts() error {
 	return nil
 }
 
+// Prompt for connection string
+func GetCS() (string, error) {
+	var host string
+	var port string
+	var user string
+	var password string
+	var database string
+	var sslmode string
+
+	fmt.Println("Enter Postgres server IP")
+	fmt.Scanln(&host)
+
+	fmt.Println("Enter Database port")
+	fmt.Scanln(&port)
+
+	fmt.Println("Enter Database name")
+	fmt.Scanln(&database)
+
+	fmt.Println("Enter Database user")
+	fmt.Scanln(&user)
+
+	fmt.Println("Enter Database password")
+	fmt.Scanln(&password)
+
+	fmt.Println("Enter Database SSL mode")
+	fmt.Scanln(&sslmode)
+
+	formatted := fmt.Sprintf("host=%s port=%s user=%s password=%s database=%s sslmode=%s", host, port, user, password, database, sslmode)
+	return formatted, nil
+
+}
+
+// Creates the filesystem and runs through the initial configuration
 func BuildFS() error {
 
 	fmt.Println("Building the file system")
@@ -201,37 +235,9 @@ func BuildFS() error {
 
 	time.Sleep(2 * time.Second)
 
+	fmt.Println("Populating Tables")
+	db.BuildTables()
+
 	fmt.Println("Completed")
 	return nil
-}
-
-func GetCS() (string, error) {
-	var host string
-	var port string
-	var user string
-	var password string
-	var database string
-	var sslmode string
-
-	fmt.Println("Enter Postgres server IP")
-	fmt.Scanln(&host)
-
-	fmt.Println("Enter Database port")
-	fmt.Scanln(&port)
-
-	fmt.Println("Enter Database name")
-	fmt.Scanln(&database)
-
-	fmt.Println("Enter Database user")
-	fmt.Scanln(&user)
-
-	fmt.Println("Enter Database password")
-	fmt.Scanln(&password)
-
-	fmt.Println("Enter Database SSL mode")
-	fmt.Scanln(&sslmode)
-
-	formatted := fmt.Sprintf("host=%s port=%s user=%s password=%s database=%s sslmode=%s", host, port, user, password, database, sslmode)
-	return formatted, nil
-
 }
