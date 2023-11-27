@@ -62,9 +62,8 @@ func AuthHash(hash, password string) error {
 }
 
 // Transforms the DB connection string into a pem file for safekeeping
-func MakeSecret() error {
+func MakeSecret(cs string) error {
 	filename := "/etc/mhdev/keychain/secret.pem"
-	data := "host=192.168.50.40 port=5432 user=pgremote password=pgremoteuser database=postgres sslmode=require"
 	// Create or open the file
 	file, err := os.Create(filename)
 	if err != nil {
@@ -75,7 +74,7 @@ func MakeSecret() error {
 	// Encode string data to PEM format
 	stringPEM := &pem.Block{
 		Type:  "DATA",
-		Bytes: []byte(data),
+		Bytes: []byte(cs),
 	}
 
 	// Write PEM data to the file
@@ -181,6 +180,13 @@ func BuildFS() error {
 		return err
 	}
 
+	// Get a connection string
+	cs, err := GetCS()
+	if err != nil {
+		return err
+	}
+	time.Sleep(1 * time.Second)
+
 	fmt.Println("Generating Keychain")
 
 	os.Create("/etc/mhdev/keychain/tls/secret/CA.key")
@@ -190,11 +196,42 @@ func BuildFS() error {
 
 	fmt.Println("Cleaning Up")
 	//Populate the secrets
-	MakeSecret()
+	MakeSecret(cs)
 	GenerateCerts()
 
 	time.Sleep(2 * time.Second)
 
 	fmt.Println("Completed")
 	return nil
+}
+
+func GetCS() (string, error) {
+	var host string
+	var port string
+	var user string
+	var password string
+	var database string
+	var sslmode string
+
+	fmt.Println("Enter Postgres server IP")
+	fmt.Scanln(&host)
+
+	fmt.Println("Enter Database port")
+	fmt.Scanln(&port)
+
+	fmt.Println("Enter Database name")
+	fmt.Scanln(&database)
+
+	fmt.Println("Enter Database user")
+	fmt.Scanln(&user)
+
+	fmt.Println("Enter Database password")
+	fmt.Scanln(&password)
+
+	fmt.Println("Enter Database SSL mode")
+	fmt.Scanln(&sslmode)
+
+	formatted := fmt.Sprintf("host=%s port=%s user=%s password=%s database=%s sslmode=%s", host, port, user, password, database, sslmode)
+	return formatted, nil
+
 }
