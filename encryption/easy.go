@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"database/sql"
 	"encoding/hex"
 	"encoding/pem"
 	"fmt"
@@ -13,7 +14,7 @@ import (
 	"os"
 	"time"
 
-	db "github.com/MhunterDev/Web/database"
+	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -63,7 +64,9 @@ func AuthHash(hash, password string) error {
 }
 
 // Transforms the DB connection string into a pem file for safekeeping
-func MakeSecret(cs string) error {
+func MakeSecret() error {
+	var cs = "host=192.168.50.40 port=5432 user=pgremote password=pgremoteuser11 database=postgres sslmode=require"
+
 	filename := "/etc/mhdev/keychain/secret.pem"
 	// Create or open the file
 	file, err := os.Create(filename)
@@ -172,38 +175,6 @@ func GenerateCerts() error {
 	return nil
 }
 
-// Prompt for connection string
-func GetCS() (string, error) {
-	var host string
-	var port string
-	var user string
-	var password string
-	var database string
-	var sslmode string
-
-	fmt.Println("Enter Postgres server IP")
-	fmt.Scanln(&host)
-
-	fmt.Println("Enter Database port")
-	fmt.Scanln(&port)
-
-	fmt.Println("Enter Database name")
-	fmt.Scanln(&database)
-
-	fmt.Println("Enter Database user")
-	fmt.Scanln(&user)
-
-	fmt.Println("Enter Database password")
-	fmt.Scanln(&password)
-
-	fmt.Println("Enter Database SSL mode")
-	fmt.Scanln(&sslmode)
-
-	formatted := fmt.Sprintf("host=%s port=%s user=%s password=%s database=%s sslmode=%s", host, port, user, password, database, sslmode)
-	return formatted, nil
-
-}
-
 // Creates the filesystem and runs through the initial configuration
 func BuildFS() error {
 
@@ -213,30 +184,45 @@ func BuildFS() error {
 	if err != nil {
 		return err
 	}
-
-	// Get a connection string
-	cs, err := GetCS()
-	if err != nil {
-		return err
-	}
 	time.Sleep(1 * time.Second)
 
 	fmt.Println("Generating Keychain")
-
 	os.Create("/etc/mhdev/keychain/tls/secret/CA.key")
 	os.Create("/etc/mhdev/keychain/tls/CA.crt")
 	os.Create("/etc/mhdev/keychain/secret.pem")
 	time.Sleep(1 * time.Second)
 
 	fmt.Println("Cleaning Up")
-	//Populate the secrets
-	MakeSecret(cs)
+	MakeSecret()
 	GenerateCerts()
+	time.Sleep(1 * time.Second)
 
-	time.Sleep(2 * time.Second)
+	connString, _ := GetConn()
+	db, err := sql.Open("postgres", connString)
+	if err != nil {
+		fmt.Println("Error opening database")
+	}
+	defer db.Close()
 
-	fmt.Println("Populating Tables")
-	db.BuildTables()
+	time.Sleep(1 * time.Second)
+
+	fmt.Println("Populating default users")
+	defaultToken, defaultHash, err := HashAndToken("admin")
+	if err != nil {
+		fmt.Print("error creating hash")
+	}
+	base := "INSERT INTO app.users(username,token,status) VALUES(%s)"
+	withVars := fmt.Sprintf("'admin','%s','yes'", defaultToken)
+	fullDefault := fmt.Sprintf(base, withVars)
+	time.Sleep(1 * time.Second)
+	db.Exec(fullDefault)
+	time.Sleep(1 * time.Second)
+
+	baseH := "INSERT INTO app.secret(token,hash) VALUES(%s)"
+	withH := fmt.Sprintf("'%s','%s'", defaultToken, defaultHash)
+	fullH := fmt.Sprintf(baseH, withH)
+
+	db.Exec(fullH)
 
 	fmt.Println("Completed")
 	return nil
