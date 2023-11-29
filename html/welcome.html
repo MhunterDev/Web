@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" i>
     <head>
-        <link type="css" rel="stylesheet" href="../css/style.css">
+        <link type="text/css" rel="stylesheet" href="../css/style.css">
         <meta charset="UTF-8">
         <meta content="HTML">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
     </head>
-    <body style>
-
-        <h4>Welcome</h4>
+    <body> 
         <p>
             <form title="Login" id="login_form" class="login-form">
+                <h4>Welcome</h4>
                 <input type="text" placeholder="Username" id="username" required> <br>
                 <input type="password" placeholder="Password" id="password" required> <br>
-                <input type="button" id="submit" title="Submit" formmethod="post" formenctype="application/x-www-form-urlencoded" formtarget="https://hunterdev.info/auth" formaction="">
+                <input type="button" value="Submit" id="submit" title="Submit" aria-label="Submit" formmethod="post" formenctype="application/x-www-form-urlencoded" formtarget="/auth" formaction="" >
             </form>
         </p>
     </body>
