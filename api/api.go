@@ -1,6 +1,10 @@
 package api
 
 import (
+	"net/http"
+
+	db "github.com/MhunterDev/Web/db"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -17,7 +21,16 @@ func handelWelcome(c *fiber.Ctx) error {
 
 // Handles button authentication
 func handleAuth(c *fiber.Ctx) error {
-	return nil
+	var u struct {
+		username string
+		password string
+	}
+	err := db.AuthPass(u.username, u.password)
+
+	if err != nil {
+		return c.Redirect("/", http.StatusForbidden)
+	}
+	return c.Redirect("/home", http.StatusAccepted)
 }
 
 // Router handles all routes and listens tls

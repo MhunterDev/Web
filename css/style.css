@@ -6,6 +6,7 @@
 }
   
 .login-form {
+  align-items: center;
   text-align: center;
   width: 300px;
   margin: 0 auto;
@@ -15,13 +16,15 @@
 }
   
 .login-form input {
-  width: 100%;
+  width: 90%;
   padding: 10px;
   border: 1px solid #ccc;
   margin-bottom: 10px;
 }
 
 .login-form input[type="button"] {
+  width:45%;
+  x
   display: block;
   margin-top: 10px;
   padding: 10px;
