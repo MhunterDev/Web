@@ -9,7 +9,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var connString, connErr = easy.GetConn()
+var connString, _ = easy.GetConn()
 
 func isUser(username string) error {
 	db, err := sql.Open("postgres", connString)
@@ -31,7 +31,7 @@ func isUser(username string) error {
 	if u == username {
 		return nil
 	}
-	return errors.New("User not Found")
+	return errors.New("user not Found")
 }
 
 func AuthPass(username, password string) error {
