@@ -47,7 +47,7 @@ func AuthPass(username, password string) error {
 	}
 	defer db.Close()
 
-	var queryBase = "SELECT token FROM app.users WHERE username LIKE %s"
+	var queryBase = "SELECT token FROM app.users WHERE username = %s"
 	formatUsername := fmt.Sprintf("'%s'", username)
 	fullQuery := fmt.Sprintf(queryBase, formatUsername)
 
@@ -57,7 +57,7 @@ func AuthPass(username, password string) error {
 
 	find.Scan(&t)
 
-	findHash := "SELECT hash FROM app.secret WHERE token LIKE %s"
+	findHash := "SELECT hash FROM app.secret WHERE token = %s"
 	formatHash := fmt.Sprintf("'%s'", t)
 	fullHash := fmt.Sprintf(findHash, formatHash)
 

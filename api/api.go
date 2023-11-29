@@ -25,6 +25,7 @@ func handleAuth(c *fiber.Ctx) error {
 		username string
 		password string
 	}
+	c.BodyParser(u)
 	err := db.AuthPass(u.username, u.password)
 
 	if err != nil {

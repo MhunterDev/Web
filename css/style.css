@@ -11,25 +11,25 @@
   width: 300px;
   margin: 0 auto;
   padding: 20px;
-  border: 1px solid #ccc;
-  background-color: #fff;
+  border: 1px solid #131212;
+  background-color: #666566;
 }
   
 .login-form input {
   width: 90%;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #070606;
   margin-bottom: 10px;
 }
 
 .login-form input[type="button"] {
-  width:45%;
-  x
+  width:30%;
   display: block;
+  padding: auto;
   margin-top: 10px;
+  margin-left: 20%;
   padding: 10px;
   border: none;
   background-color: #007bff;
-  color: #fff;
   cursor: pointer;
 }
