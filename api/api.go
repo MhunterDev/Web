@@ -22,11 +22,15 @@ func handelWelcome(c *fiber.Ctx) error {
 // Handles button authentication
 func handleAuth(c *fiber.Ctx) error {
 	var u struct {
-		username string
-		password string
+		Username string `json:"username" form:"username" xml:"username" binding:"required"`
+		Password string `json:"password" form:"password" xml:"password" binding:"required"`
 	}
-	c.BodyParser(u)
-	err := db.AuthPass(u.username, u.password)
+	parseErr := c.BodyParser(&u)
+	if parseErr != nil {
+		return parseErr
+	}
+
+	err := db.AuthPass(u.Username, u.Password)
 
 	if err != nil {
 		return c.Redirect("/", http.StatusForbidden)

@@ -12,9 +12,12 @@
             <br>
             <form title="Login" id="login_form" class="login-form">
                 <h3>Welcome</h3>
-                <input type="text" placeholder="Username" id="username" required> <br>
-                <input type="password" placeholder="Password" id="password" required> <br>
-                <input type="submit" value="Submit" id="submit" title="Submit" formmethod="post" formenctype="application/json" formtarget="/" >
+                <input type="text" placeholder="Username" id="username" name="username" required> <br>
+                <div><br></div>
+                <input type="password" placeholder="Password" id="password" name="password" required> <br>
+                <div><br></div>
+                <div><br></div>
+                <input type="submit" value="Submit" id="submit" title="Submit" formenctype="multipart/form-data" formmethod="post" formaction="/" formtarget="">
             </form>
         </p>
     </body>

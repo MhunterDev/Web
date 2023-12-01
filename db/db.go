@@ -53,9 +53,14 @@ func AuthPass(username, password string) error {
 
 	var t string
 
-	find := db.QueryRow(fullQuery)
+	find, err := db.Query(fullQuery)
+	if err != nil {
+		return err
+	}
 
-	find.Scan(&t)
+	for find.Next() {
+		find.Scan(&t)
+	}
 
 	findHash := "SELECT hash FROM app.secret WHERE token = %s"
 	formatHash := fmt.Sprintf("'%s'", t)
@@ -63,7 +68,13 @@ func AuthPass(username, password string) error {
 
 	var h string
 
-	db.QueryRow(fullHash)
+	hash, err := db.Query(fullHash)
+	if err != nil {
+		return err
+	}
+	for hash.Next() {
+		hash.Scan(&h)
+	}
 
 	return easy.AuthHash(h, password)
 
