@@ -1,8 +1,6 @@
 package api
 
 import (
-	"net/http"
-
 	db "github.com/MhunterDev/Web/db"
 
 	"github.com/gofiber/fiber/v2"
@@ -19,6 +17,17 @@ func handelWelcome(c *fiber.Ctx) error {
 	return c.Render("/workspaces/Web/html/welcome.html", fiber.Map{}, "html")
 }
 
+// Returns homepage html
+func handleHome(c *fiber.Ctx) error {
+	var cookie string
+	c.CookieParser(&cookie)
+	if len(cookie) != 0 {
+		return c.Render("/workspaces/Web/html/home.html", fiber.Map{}, "html")
+	} else {
+		return c.Render("/workspaces/Web/html/welcome.html", fiber.Map{}, "html")
+	}
+}
+
 // Handles button authentication
 func handleAuth(c *fiber.Ctx) error {
 	var u struct {
@@ -33,9 +42,12 @@ func handleAuth(c *fiber.Ctx) error {
 	err := db.AuthPass(u.Username, u.Password)
 
 	if err != nil {
-		return c.Redirect("/", http.StatusForbidden)
+		return c.Render("/workspaces/Web/html/welcome.html", fiber.Map{}, "html")
 	}
-	return c.Redirect("/home", http.StatusAccepted)
+	cookie := new(fiber.Cookie)
+	cookie.Name = u.Username
+	c.Cookie(cookie)
+	return c.Redirect("/home", 200)
 }
 
 // Router handles all routes and listens tls
@@ -44,7 +56,8 @@ func Router() {
 
 	// Serves home page
 	app.Get("/", handelWelcome)
-
+	app.Put("/home", handleHome)
+	app.Route("/home",func (fiber.)
 	// Handles button submission
 	app.Post("/", handleAuth)
 
